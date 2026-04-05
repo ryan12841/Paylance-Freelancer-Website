@@ -1,65 +1,139 @@
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import { FaBell, FaMoon, FaSun, FaUserCircle } from "react-icons/fa";
+import { FaBell, FaMoon, FaSun } from "react-icons/fa";
 
-export default function Navbar() {
+export default function Navbar({ toggleSidebar }) {
   const { dark, toggleTheme } = useContext(ThemeContext);
 
   return (
     <div
-      className="d-flex justify-content-between align-items-center px-4 py-3 shadow-sm"
       style={{
-        background: dark ? "#2a2a40" : "#ffffff",
-        transition: "0.3s",
+        height: "64px",
+        padding: "0 24px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        background: dark ? "#111827" : "#ffffff",
+        borderBottom: "1px solid #e5e7eb",
       }}
     >
       {/* LEFT */}
-      <h5 className="m-0 fw-bold">📊 Dashboard</h5>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        
+        {/* SIDEBAR TOGGLE */}
+        <button
+          onClick={toggleSidebar}
+          style={{
+            border: "none",
+            background: "transparent",
+            fontSize: "20px",
+            cursor: "pointer",
+          }}
+        >
+          ☰
+        </button>
+
+        <h5 style={{ margin: 0, fontWeight: 600 }}>
+          Dashboard
+        </h5>
+      </div>
 
       {/* RIGHT */}
-      <div className="d-flex align-items-center gap-4">
+      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
 
         {/* THEME TOGGLE */}
-        <div onClick={toggleTheme} style={{ cursor: "pointer" }}>
-          {dark ? <FaSun size={18} /> : <FaMoon size={18} />}
+        <div
+          onClick={toggleTheme}
+          style={{
+            cursor: "pointer",
+            padding: "8px",
+            borderRadius: "8px",
+            transition: "0.2s",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.background = "#f3f4f6")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.background = "transparent")
+          }
+        >
+          {dark ? <FaSun size={16} /> : <FaMoon size={16} />}
         </div>
 
         {/* NOTIFICATIONS */}
-        <div style={{ position: "relative", cursor: "pointer" }}>
-          <FaBell size={18} />
+        <div
+          style={{
+            position: "relative",
+            cursor: "pointer",
+            padding: "8px",
+            borderRadius: "8px",
+          }}
+        >
+          <FaBell size={16} />
           <span
             style={{
               position: "absolute",
-              top: "-6px",
-              right: "-6px",
-              background: "red",
-              color: "#fff",
+              top: "4px",
+              right: "4px",
+              height: "8px",
+              width: "8px",
+              background: "#ef4444",
               borderRadius: "50%",
-              fontSize: "10px",
-              padding: "2px 6px",
             }}
-          >
-            3
-          </span>
+          />
         </div>
 
         {/* PROFILE */}
-        <div className="d-flex align-items-center gap-2">
-          <FaUserCircle size={24} />
-          <span>Sunny</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            cursor: "pointer",
+            padding: "6px 10px",
+            borderRadius: "8px",
+          }}
+        >
+          {/* AVATAR */}
+          <div
+            style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              background: "#6366f1",
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            S
+          </div>
+
+          <span style={{ fontSize: "14px", fontWeight: 500 }}>
+            Sunny
+          </span>
         </div>
 
-        {/* LOGOUT */}
+        {/* LOGOUT (SUBTLE STYLE) */}
         <button
-          className="btn btn-danger btn-sm"
           onClick={() => {
             localStorage.removeItem("token");
             window.location.href = "/login";
           }}
+          style={{
+            border: "1px solid #e5e7eb",
+            background: "transparent",
+            padding: "6px 12px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "13px",
+          }}
         >
           Logout
         </button>
-
       </div>
     </div>
   );
