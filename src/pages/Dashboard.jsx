@@ -4,6 +4,13 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from "recharts";
+import { FaUsers, FaProjectDiagram, FaRupeeSign, FaClock } from "react-icons/fa";
+
+const rupeeFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 0,
+});
 
 export default function Dashboard() {
   const [clients, setClients] = useState([]);
@@ -22,7 +29,7 @@ export default function Dashboard() {
     return () => window.removeEventListener("focus", loadData);
   }, []);
 
-  // 💰 CALCULATIONS
+  // Calculations
   const totalIncome = invoices
     .filter(i => i.status === "Paid")
     .reduce((sum, i) => sum + i.total, 0);
@@ -31,7 +38,7 @@ export default function Dashboard() {
     .filter(i => i.status === "Unpaid")
     .reduce((sum, i) => sum + i.total, 0);
 
-  // 📊 MONTHLY DATA
+  // Monthly Income Data
   const monthlyData = {};
   invoices.forEach(inv => {
     const month = new Date(inv.date).toLocaleString("default", { month: "short" });
@@ -46,35 +53,42 @@ export default function Dashboard() {
     income: monthlyData[m],
   }));
 
-  // 🥧 PIE DATA
+  // Pie Data
   const pieData = [
     { name: "Paid", value: totalIncome },
     { name: "Unpaid", value: pendingAmount },
   ];
 
-  const COLORS = ["#00C49F", "#FF4B2B"];
+  const COLORS = ["#4caf50", "#f44336"];
+
+  const cards = [
+    { title: "Clients", value: clients.length, icon: <FaUsers size={28} />, color: "linear-gradient(45deg, #667eea, #764ba2)" },
+    { title: "Projects", value: projects.length, icon: <FaProjectDiagram size={28} />, color: "linear-gradient(45deg, #43cea2, #185a9d)" },
+    { title: "Income", value: rupeeFormatter.format(totalIncome), icon: <FaRupeeSign size={28} />, color: "linear-gradient(45deg, #11998e, #38ef7d)" },
+    { title: "Pending", value: rupeeFormatter.format(pendingAmount), icon: <FaClock size={28} />, color: "linear-gradient(45deg, #ff416c, #ff4b2b)" },
+  ];
 
   return (
     <div className="container mt-4">
-      <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.h2
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         🚀 Dashboard Analytics
       </motion.h2>
 
       {/* CARDS */}
       <div className="row mt-4 g-4">
-        {[
-          { title: "Clients", value: clients.length, color: "#667eea" },
-          { title: "Projects", value: projects.length, color: "#43cea2" },
-          { title: "Income", value: `₹${totalIncome}`, color: "#11998e" },
-          { title: "Pending", value: `₹${pendingAmount}`, color: "#ff416c" },
-        ].map((card, i) => (
+        {cards.map((card, i) => (
           <div className="col-md-3" key={i}>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="p-4 text-white rounded-4 shadow text-center"
-              style={{ background: card.color }}
+              className="p-4 text-white rounded-4 shadow d-flex flex-column align-items-center justify-content-center"
+              style={{ background: card.color, minHeight: "130px", cursor: "default" }}
             >
-              <h6>{card.title}</h6>
+              <div>{card.icon}</div>
+              <h6 className="mt-3 mb-1">{card.title}</h6>
               <h3>{card.value}</h3>
             </motion.div>
           </div>
@@ -82,7 +96,7 @@ export default function Dashboard() {
       </div>
 
       {/* CHARTS */}
-      <div className="row mt-5">
+      <div className="row mt-5 g-4">
         {/* BAR CHART */}
         <div className="col-md-6">
           <div className="card p-4 shadow rounded-4">
@@ -108,13 +122,15 @@ export default function Dashboard() {
                   data={pieData}
                   dataKey="value"
                   outerRadius={100}
-                  label
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={index} fill={COLORS[index]} />
                   ))}
                 </Pie>
-                <Legend />
+                <Legend verticalAlign="bottom" height={36} />
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
